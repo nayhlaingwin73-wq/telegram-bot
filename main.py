@@ -4,9 +4,6 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import os
 TOKEN = "8642892449:AAEmVrABAatFXe9cvAsFrbMi1VgImr-_53Q"
 ADMIN_ID = 8553448978
-TOKEN = os.getenv("8642892449:AAEmVrABAatFXe9cvAsFrbMi1VgImr-_53Q")
-ADMIN_ID = int(os.getenv("8553448978"))
-
 bot = telebot.TeleBot(TOKEN)
 
 def extract_numbers(text):
