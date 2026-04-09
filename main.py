@@ -46,7 +46,6 @@ def handle_photo(message):
             caption=f"{username}\n\n{result}",
             reply_markup=markup
         )
-
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
     data = call.data.split("|")
@@ -55,21 +54,25 @@ def callback(call):
         chat_id = int(data[1])
 
         try:
-            # ✅ 1. Customer "Order..." message delete
-            if chat_id in user_messages:
-                bot.delete_message(chat_id, user_messages[chat_id])
+            # ✅ old "Order..." message id ရယူ
+            msg_id = user_messages.get(chat_id)
 
-            # ✅ 2. Customer ကို final reply
+            # ❌ 1. Order message delete
+            if msg_id:
+                bot.delete_message(chat_id, msg_id)
+
+            # ✅ 2. Customer original message ကို reply ပြန်
             bot.send_message(
                 chat_id,
-                "ထည့်ပြီးပါပြီဗျ✅\nဝယ်ယူအားပေးမှုအတွက်အထူးကျေးဇူးတင်ရှိပါသည်😻"
+                "ထည့်ပြီးပါပြီဗျ✅\nဝယ်ယူအားပေးမှုအတွက်အထူးကျေးဇူးတင်ရှိပါသည်😻",
+                reply_to_message_id=msg_id  # 🔥 ဒီဟာအရေးကြီး
             )
 
         except Exception as e:
             print(e)
 
         try:
-            # ✅ 3. Admin photo delete
+            # ❌ 3. Admin photo delete
             bot.delete_message(
                 call.message.chat.id,
                 call.message.message_id
@@ -78,6 +81,5 @@ def callback(call):
             print(e)
 
         bot.answer_callback_query(call.id, "Done!")
-
 print("Bot running 🚀")
 bot.infinity_polling()
