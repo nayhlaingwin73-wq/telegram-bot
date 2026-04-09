@@ -18,14 +18,26 @@ def handle_photo(message):
         user = message.from_user
         username = f"@{user.username}" if user.username else user.first_name
 
-        markup = InlineKeyboardMarkup()
-        markup.add(
-            InlineKeyboardButton("Done✅", callback_data=f"done|{message.chat.id}|{message.message_id}")
+        # ✅ Customer ကို reply ပြန် (clean)
+        bot.reply_to(
+            message,
+            "Order အောင်မြင်ပါသည်✅\nAdmin မှ ငွေလွှဲပြေစာအား စစ်ဆေးနေပါသည်⏳"
         )
 
-        bot.send_message(
+        # ✅ Admin button (Done format ပြင်ပြီး)
+        markup = InlineKeyboardMarkup()
+        markup.add(
+            InlineKeyboardButton(
+                "Done✅",
+                callback_data=f"done|{message.chat.id}|{message.message_id}"
+            )
+        )
+
+        # ✅ Admin ကို photo + info ပို့
+        bot.send_photo(
             ADMIN_ID,
-            f"📥 New Order\n👤 {username}\n\n{result}",
+            message.photo[-1].file_id,
+            caption=f"{message.chat.id}|{username}\n\n{result}",
             reply_markup=markup
         )
 
