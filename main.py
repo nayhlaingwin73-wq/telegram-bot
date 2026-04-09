@@ -9,6 +9,9 @@ bot = telebot.TeleBot(TOKEN)
 def extract_numbers(text):
     return " ".join(re.findall(r'\d+', text))
 
+# user message id store လုပ်ဖို့ dict
+user_messages = {}
+
 @bot.message_handler(content_types=['photo'])
 def handle_photo(message):
     if message.caption and re.search(r'\d+', message.caption):
@@ -18,26 +21,29 @@ def handle_photo(message):
         user = message.from_user
         username = f"@{user.username}" if user.username else user.first_name
 
-        # ✅ Customer ကို reply ပြန် (clean)
-        bot.reply_to(
+        # ✅ Customer ကို reply
+        sent = bot.reply_to(
             message,
             "Order အောင်မြင်ပါသည်✅\nAdmin မှ ငွေလွှဲပြေစာအား စစ်ဆေးနေပါသည်⏳"
         )
 
-        # ✅ Admin button (Done format ပြင်ပြီး)
+        # ✅ message_id save
+        user_messages[message.chat.id] = sent.message_id
+
+        # ✅ Admin button
         markup = InlineKeyboardMarkup()
         markup.add(
             InlineKeyboardButton(
                 "Done✅",
-                callback_data=f"done|{message.chat.id}|{message.message_id}"
+                callback_data=f"done|{message.chat.id}"
             )
         )
 
-        # ✅ Admin ကို photo + info ပို့
+        # ❌ chat id မပြတော့ဘူး
         bot.send_photo(
             ADMIN_ID,
             message.photo[-1].file_id,
-            caption=f"{message.chat.id}|{username}\n\n{result}",
+            caption=f"{username}\n\n{result}",
             reply_markup=markup
         )
 
@@ -47,19 +53,29 @@ def callback(call):
 
     if data[0] == "done":
         chat_id = int(data[1])
-        msg_id = int(data[2])
 
-        bot.send_message(
-            chat_id,
-            "ထည့်ပြီးပါပြီဗျ✅",
-            reply_to_message_id=msg_id
-        )
+        try:
+            # ✅ 1. Customer "Order..." message delete
+            if chat_id in user_messages:
+                bot.delete_message(chat_id, user_messages[chat_id])
 
-        bot.edit_message_reply_markup(
-            call.message.chat.id,
-            call.message.message_id,
-            reply_markup=None
-        )
+            # ✅ 2. Customer ကို final reply
+            bot.send_message(
+                chat_id,
+                "ထည့်ပြီးပါပြီဗျ✅\nဝယ်ယူအားပေးမှုအတွက်အထူးကျေးဇူးတင်ရှိပါသည်😻"
+            )
+
+        except Exception as e:
+            print(e)
+
+        try:
+            # ✅ 3. Admin photo delete
+            bot.delete_message(
+                call.message.chat.id,
+                call.message.message_id
+            )
+        except Exception as e:
+            print(e)
 
         bot.answer_callback_query(call.id, "Done!")
 
