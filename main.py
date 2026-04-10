@@ -24,7 +24,8 @@ def handle_photo(message):
         # ✅ reply message (bot message only)
         sent = bot.reply_to(
             message,
-            "Order အောင်မြင်ပါသည်✅\nAdmin မှ ငွေလွှဲပြေစာအား စစ်ဆေးနေပါသည်⏳"
+            "Order confirmed ✅
+Checking payment…!Please wait ⏳"
         )
 
         # ✅ save BOTH ids
