@@ -25,7 +25,7 @@ def handle_photo(message):
         sent = bot.reply_to(
             message,
             "Order confirmed ✅
-Checking payment…!Please wait ⏳"
+             Checking payment…!Please wait ⏳"
         )
 
         # ✅ save BOTH ids
