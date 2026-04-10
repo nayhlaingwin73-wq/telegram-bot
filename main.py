@@ -1,7 +1,6 @@
 import telebot
 import re
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-import os
 
 TOKEN = "8642892449:AAEmVrABAatFXe9cvAsFrbMi1VgImr-_53Q"
 ADMIN_ID = 8553448978
@@ -11,7 +10,6 @@ bot = telebot.TeleBot(TOKEN)
 def extract_numbers(text):
     return " ".join(re.findall(r'\d+', text))
 
-# ✅ dict upgrade
 user_messages = {}
 
 @bot.message_handler(content_types=['photo'])
@@ -23,19 +21,19 @@ def handle_photo(message):
         user = message.from_user
         username = f"@{user.username}" if user.username else user.first_name
 
-        # ✅ reply message
+        # ✅ reply message (bot message only)
         sent = bot.reply_to(
             message,
             "Order အောင်မြင်ပါသည်✅\nAdmin မှ ငွေလွှဲပြေစာအား စစ်ဆေးနေပါသည်⏳"
         )
 
-        # ✅ BOTH save (🔥 important)
+        # ✅ save BOTH ids
         user_messages[message.chat.id] = {
-            "order_msg": sent.message_id,     # bot message
-            "user_msg": message.message_id    # original photo
+            "order_msg": sent.message_id,
+            "user_msg": message.message_id
         }
 
-        # ✅ Admin button
+        # ✅ admin button
         markup = InlineKeyboardMarkup()
         markup.add(
             InlineKeyboardButton(
@@ -51,7 +49,6 @@ def handle_photo(message):
             reply_markup=markup
         )
 
-
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
     data = call.data.split("|")
@@ -63,10 +60,10 @@ def callback(call):
             data_store = user_messages.get(chat_id)
 
             if data_store:
-                # ❌ delete order message
+                # ✅ delete ONLY bot reply (not user photo)
                 bot.delete_message(chat_id, data_store["order_msg"])
 
-                # ✅ reply to ORIGINAL photo (🔥 fixed)
+                # ✅ reply to original photo (photo မဖျက်ဘူး)
                 bot.send_message(
                     chat_id,
                     "ထည့်ပြီးပါပြီဗျ✅\nဝယ်ယူအားပေးမှုအတွက်အထူးကျေးဇူးတင်ရှိပါသည်😻",
@@ -77,7 +74,7 @@ def callback(call):
             print(e)
 
         try:
-            # ❌ delete admin photo
+            # ✅ delete admin side message only
             bot.delete_message(
                 call.message.chat.id,
                 call.message.message_id
@@ -86,7 +83,6 @@ def callback(call):
             print(e)
 
         bot.answer_callback_query(call.id, "Done!")
-
 
 print("Bot running 🚀")
 bot.infinity_polling()
