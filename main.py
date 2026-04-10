@@ -62,7 +62,7 @@ def callback(call):
                 # ✅ delete ONLY bot reply (customer side)
                 bot.delete_message(chat_id, data_store["order_msg"])
 
-                # ✅ send confirm message (reply to photo)
+                # ✅ send confirm message
                 bot.send_message(
                     chat_id,
                     "ထည့်ပြီးပါပြီဗျ✅\nဝယ်ယူအားပေးမှုအတွက်အထူးကျေးဇူးတင်ရှိပါသည်😻",
@@ -72,8 +72,15 @@ def callback(call):
         except Exception as e:
             print(e)
 
-        # ❌ ဒီကို မရေးတော့ဘူး (admin message မဖျက်ချင်လို့)
-        # bot.delete_message(call.message.chat.id, call.message.message_id)
+        try:
+            # 🔥 REMOVE BUTTON ONLY (message မဖျက်)
+            bot.edit_message_reply_markup(
+                call.message.chat.id,
+                call.message.message_id,
+                reply_markup=None
+            )
+        except Exception as e:
+            print(e)
 
         bot.answer_callback_query(call.id, "Done!")
 
