@@ -61,8 +61,7 @@ def callback(call):
 
             if data_store:
                 # ✅ delete ONLY bot reply (not user photo)
-                bot.delete_message(chat_id, data_store["order_msg"])
-
+                
                 # ✅ reply to original photo (photo မဖျက်ဘူး)
                 bot.send_message(
                     chat_id,
