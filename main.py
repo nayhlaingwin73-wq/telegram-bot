@@ -24,8 +24,7 @@ def handle_photo(message):
         # ✅ reply message (bot message only)
         sent = bot.reply_to(
             message,
-            "Order confirmed ✅
-             Checking payment…!Please wait ⏳"
+            "Order confirmed ✅\nChecking payment… Please wait ⏳"
         )
 
         # ✅ save BOTH ids
@@ -66,7 +65,7 @@ def callback(call):
                 # ✅ send confirm message
                 bot.send_message(
                     chat_id,
-                    "ထည့်ပြီးပါပြီဗျ✅\nဝယ်ယူအားပေးမှုအတွက်အထူးကျေးဇူးတင်ရှိပါသည်😻",
+                    "Done✅ \nThank you for your purchase!😍",
                     reply_to_message_id=data_store["user_msg"]
                 )
 
