@@ -48,7 +48,6 @@ def handle_photo(message):
             caption=f"{username}\n\n{result}",
             reply_markup=markup
         )
-
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
     data = call.data.split("|")
@@ -60,9 +59,10 @@ def callback(call):
             data_store = user_messages.get(chat_id)
 
             if data_store:
-                # ✅ delete ONLY bot reply (not user photo)
-                
-                # ✅ reply to original photo (photo မဖျက်ဘူး)
+                # ✅ delete ONLY bot reply (customer side)
+                bot.delete_message(chat_id, data_store["order_msg"])
+
+                # ✅ send confirm message (reply to photo)
                 bot.send_message(
                     chat_id,
                     "ထည့်ပြီးပါပြီဗျ✅\nဝယ်ယူအားပေးမှုအတွက်အထူးကျေးဇူးတင်ရှိပါသည်😻",
@@ -72,16 +72,11 @@ def callback(call):
         except Exception as e:
             print(e)
 
-        try:
-            # ✅ delete admin side message only
-            bot.delete_message(
-                call.message.chat.id,
-                call.message.message_id
-            )
-        except Exception as e:
-            print(e)
+        # ❌ ဒီကို မရေးတော့ဘူး (admin message မဖျက်ချင်လို့)
+        # bot.delete_message(call.message.chat.id, call.message.message_id)
 
         bot.answer_callback_query(call.id, "Done!")
 
+        
 print("Bot running 🚀")
 bot.infinity_polling()
